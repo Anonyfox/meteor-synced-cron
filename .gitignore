@@ -1,0 +1,4 @@
+node_modules/
+.npm/
+.meteor/local/
+tsconfig.tsbuildinfo
