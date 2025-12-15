@@ -10,11 +10,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Anonyfox/synced-cron"
+    "url": "https://github.com/Anonyfox/meteor-synced-cron"
   },
-  "homepage": "https://github.com/Anonyfox/synced-cron#readme",
+  "homepage": "https://github.com/Anonyfox/meteor-synced-cron#readme",
   "bugs": {
-    "url": "https://github.com/Anonyfox/synced-cron/issues"
+    "url": "https://github.com/Anonyfox/meteor-synced-cron/issues"
   },
   "keywords": [
     "meteor",

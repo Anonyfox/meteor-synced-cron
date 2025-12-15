@@ -1,8 +1,9 @@
 # SyncedCron
 
-Modern, type-safe cron scheduler for Meteor 3.x with synchronized execution across multiple server instances.
+[![Atmosphere](https://img.shields.io/badge/Atmosphere-anonyfox:synced--cron-blue?style=flat-square&logo=meteor)](https://atmospherejs.com/anonyfox/synced-cron)
+[![GitHub](https://img.shields.io/badge/GitHub-Source-black?style=flat-square&logo=github)](https://github.com/Anonyfox/meteor-synced-cron)
 
-## Installation
+Modern, type-safe cron scheduler for Meteor 3.x with synchronized execution across multiple server instances.
 
 ```bash
 meteor add anonyfox:synced-cron
@@ -60,32 +61,49 @@ await cron.start();
 ### Daily at Specific Time
 
 ```typescript
-{ at: "14:30" }  // Every day at 2:30 PM
-{ at: "09:00" }  // Every day at 9:00 AM
-{ at: "00:00" }  // Every day at midnight
+{
+  at: "14:30";
+} // Every day at 2:30 PM
+{
+  at: "09:00";
+} // Every day at 9:00 AM
+{
+  at: "00:00";
+} // Every day at midnight
 ```
 
 ### Cron Expressions
 
 ```typescript
-{ cron: "*/5 * * * *" }     // Every 5 minutes
-{ cron: "0 */6 * * *" }     // Every 6 hours at :00
-{ cron: "0 9 * * 1-5" }     // Weekdays at 9:00 AM
-{ cron: "0 0 1 * *" }       // First day of month at midnight
-{ cron: "0 0 L * *" }       // Last day of month at midnight
+{
+  cron: "*/5 * * * *";
+} // Every 5 minutes
+{
+  cron: "0 */6 * * *";
+} // Every 6 hours at :00
+{
+  cron: "0 9 * * 1-5";
+} // Weekdays at 9:00 AM
+{
+  cron: "0 0 1 * *";
+} // First day of month at midnight
+{
+  cron: "0 0 L * *";
+} // Last day of month at midnight
 ```
 
 ## Cron Syntax Reference
 
-| Field   | Values          | Special Characters |
-|---------|-----------------|-------------------|
-| Minute  | 0-59            | `*` `,` `-` `/`   |
-| Hour    | 0-23            | `*` `,` `-` `/`   |
-| Day     | 1-31, `L`       | `*` `,` `-` `/`   |
-| Month   | 1-12, JAN-DEC   | `*` `,` `-` `/`   |
-| Weekday | 0-7, SUN-SAT    | `*` `,` `-` `/`   |
+| Field   | Values        | Special Characters |
+| ------- | ------------- | ------------------ |
+| Minute  | 0-59          | `*` `,` `-` `/`    |
+| Hour    | 0-23          | `*` `,` `-` `/`    |
+| Day     | 1-31, `L`     | `*` `,` `-` `/`    |
+| Month   | 1-12, JAN-DEC | `*` `,` `-` `/`    |
+| Weekday | 0-7, SUN-SAT  | `*` `,` `-` `/`    |
 
 **Special characters:**
+
 - `*` — Any value
 - `,` — List separator (`1,15` = 1st and 15th)
 - `-` — Range (`MON-FRI` = Monday through Friday)
@@ -100,7 +118,9 @@ When **both** day-of-month and day-of-week are specified (neither is `*`), the j
 
 ```typescript
 // Runs on the 15th OR on Mondays (not "15th that is a Monday")
-{ cron: "0 12 15 * 1" }
+{
+  cron: "0 12 15 * 1";
+}
 ```
 
 This follows standard cron behavior. For AND logic, check the condition in your job:
@@ -111,7 +131,7 @@ job: async (intendedAt) => {
   const isMonday = intendedAt.getDay() === 1;
   if (!(isThe15th && isMonday)) return; // Skip
   // ... your logic
-}
+};
 ```
 
 ## Configuration
@@ -119,28 +139,29 @@ job: async (intendedAt) => {
 ```typescript
 new SyncedCron({
   // MongoDB collection for job history and synchronization
-  collectionName: "cronHistory",  // default: "cronHistory"
+  collectionName: "cronHistory", // default: "cronHistory"
 
   // Time-to-live for history records in seconds
   // Minimum: 300 (5 min), null = keep forever
-  collectionTTL: 172800,          // default: 172800 (48 hours)
+  collectionTTL: 172800, // default: 172800 (48 hours)
 
   // Logger with info/warn/error/debug methods
-  logger: console,                // default: console
+  logger: console, // default: console
 
   // Use UTC for all schedule calculations
-  utc: false,                     // default: false (local time)
+  utc: false, // default: false (local time)
 });
 ```
 
 ## UTC vs Local Time
 
-| Mode          | Best For                              | DST Behavior           |
-|---------------|---------------------------------------|------------------------|
-| `utc: true`   | System tasks, monitoring, API polling | ✅ No DST surprises    |
-| `utc: false`  | Human-facing schedules ("9 AM daily") | ⚠️ DST affects timing |
+| Mode         | Best For                              | DST Behavior          |
+| ------------ | ------------------------------------- | --------------------- |
+| `utc: true`  | System tasks, monitoring, API polling | ✅ No DST surprises   |
+| `utc: false` | Human-facing schedules ("9 AM daily") | ⚠️ DST affects timing |
 
 **DST Warning for Local Time:**
+
 - **Spring Forward:** Jobs between 2:00–3:00 AM may be skipped (hour doesn't exist)
 - **Fall Back:** Jobs between 1:00–2:00 AM may run twice (hour repeats)
 
@@ -151,9 +172,9 @@ new SyncedCron({
 ### Lifecycle
 
 ```typescript
-await cron.start();              // Start scheduling all jobs
-cron.pause();                    // Pause all jobs (keeps definitions)
-await cron.stop();               // Stop and remove all jobs
+await cron.start(); // Start scheduling all jobs
+cron.pause(); // Pause all jobs (keeps definitions)
+await cron.stop(); // Stop and remove all jobs
 await cron.gracefulShutdown(ms); // Wait for running jobs, then stop
 ```
 
@@ -184,8 +205,8 @@ const names = cron.getJobNames(); // ["job1", "job2"]
 ### Per-Job Pause/Resume
 
 ```typescript
-cron.pauseJob("job-name");           // Pause one job
-cron.resumeJob("job-name");          // Resume a paused job
+cron.pauseJob("job-name"); // Pause one job
+cron.resumeJob("job-name"); // Resume a paused job
 const paused = cron.isJobPaused("job-name"); // Check pause state
 ```
 
@@ -290,7 +311,7 @@ await cron.add({
     async () => {
       await verySlowOperation();
     },
-    120000, // 2 minute timeout
+    120000 // 2 minute timeout
   ),
 });
 ```
@@ -342,4 +363,3 @@ If this package helps your project, consider sponsoring its maintenance:
 **[Anonyfox](https://anonyfox.com) • [MIT License](LICENSE)**
 
 </div>
-

@@ -2,7 +2,7 @@ Package.describe({
   name: "anonyfox:synced-cron",
   version: "0.0.1",
   summary: "Synchronized cron jobs across multiple Meteor 3.3+ instances",
-  git: "https://github.com/Anonyfox/synced-cron",
+  git: "https://github.com/Anonyfox/meteor-synced-cron",
   documentation: "README.md",
 });
 
